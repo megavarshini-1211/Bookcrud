@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login / Signup</title>
+    <style>
+      body {
+        font-family: Arial;
+        text-align: center;
+        padding: 50px;
+      }
+      form {
+        display: none;
+        margin-top: 20px;
+      }
+      input {
+        margin: 8px;
+        padding: 8px;
+        width: 200px;
+      }
+      button {
+        padding: 8px 16px;
+        margin-top: 10px;
+      }
+      #message {
+        color: green;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome</h1>
+
+    <button onclick="showForm('signup')">Sign Up</button>
+    <button onclick="showForm('login')">Login</button>
+
+    <form id="signupForm">
+      <h2>Sign Up</h2>
+      <input type="email" id="signupEmail" placeholder="Email" required /><br />
+      <input
+        type="text"
+        id="signupUsername"
+        placeholder="Username"
+        required
+      /><br />
+      <input
+        type="password"
+        id="signupPassword"
+        placeholder="Password"
+        required
+      /><br />
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <form id="loginForm">
+      <h2>Login</h2>
+      <input type="email" id="loginEmail" placeholder="Email" required /><br />
+      <input
+        type="password"
+        id="loginPassword"
+        placeholder="Password"
+        required
+      /><br />
+      <button type="submit">Login</button>
+    </form>
+
+    <p id="message"></p>
+
+    <script>
+      const signupForm = document.getElementById("signupForm");
+      const loginForm = document.getElementById("loginForm");
+      const message = document.getElementById("message");
+
+      function showForm(type) {
+        signupForm.style.display = type === "signup" ? "block" : "none";
+        loginForm.style.display = type === "login" ? "block" : "none";
+        message.textContent = "";
+      }
+
+      signupForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("signupEmail").value;
+        const username = document.getElementById("signupUsername").value;
+        const password = document.getElementById("signupPassword").value;
+
+        const res = await fetch("http://localhost:5000/api/user/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, username, password }),
+        });
+
+        const data = await res.json();
+        message.textContent = data.message;
+      };
+
+      loginForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+
+        const res = await fetch("http://localhost:5000/api/user/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message);
+          window.location.href = "index.html";
+        } else {
+          message.textContent = data.message;
+        }
+      };
+
+      // Show login by default
+      showForm("login");
+    </script>
+  </body>
+</html>
